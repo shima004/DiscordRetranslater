@@ -1,5 +1,5 @@
 import random
-import discord
+from discord.ext import commands
 import requests
 import csv
 import os
@@ -19,7 +19,8 @@ with open("translate_lang.csv", "r", encoding="utf-8") as f:
 
 translate_langs = "ja,en,ja"
 
-client = discord.Client()
+bot = commands.Bot(command_prefix='/')
+
 
 @client.event
 async def on_ready():
@@ -78,4 +79,4 @@ async def on_message(message):
     await message.reply(reply_msg)
     # await message.channel.send(translate_msg)
 
-client.run(TOKEN)
+bot.run(TOKEN)
