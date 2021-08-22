@@ -7,6 +7,7 @@ import os
 try:
   from local_settings import *
 except ImportError:
+  print("No local settings found")
   TOKEN = os.environ.get('TOKEN')
   APIURL = os.environ.get('APIURL')
 
