@@ -23,11 +23,11 @@ translate_langs = "ja,en,ja"
 bot = commands.Bot(command_prefix='/')
 
 
-@client.event
+@bot.event
 async def on_ready():
   print("bot started")
 
-@client.event
+@bot.event
 async def on_message(message):
   global translate_langs
   if message.author.bot:
