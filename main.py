@@ -64,7 +64,7 @@ async def on_message(message):
       "/rand [int: num] : ランダムで言語を設定する 0 < num < 10 ex.) /rand 3"
     )
   elif message.content.startswith("/t"): # /translate
-    msg = message.content
+    msg = "".join(message.content.split(" ")[1:])
     try:
       translate_msg = requests.get(APIURL.format(msg, translate_langs)).json()["text"].split(",,,,,")
       reply_msg = ""
