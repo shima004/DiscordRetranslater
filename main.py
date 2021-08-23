@@ -63,7 +63,7 @@ async def on_message(message):
       "/langlist : 使うことのできる言語コードを表示する\n"+
       "/rand [int: num] : ランダムで言語を設定する 0 < num < 10 ex.) /rand 3"
     )
-  else:
+  elif message.content.startswith("/t"): # /translate
     msg = message.content
     try:
       translate_msg = requests.get(APIURL.format(msg, translate_langs)).json()["text"].split(",,,,,")
