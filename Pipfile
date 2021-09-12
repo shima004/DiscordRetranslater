@@ -7,6 +7,7 @@ name = "pypi"
 "discord.py" = {extras = ["voice"], version = "*"}
 requests = "*"
 python-dotenv = "*"
+youtube-dl = "*"
 
 [dev-packages]
 

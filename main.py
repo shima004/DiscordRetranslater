@@ -3,6 +3,7 @@ from discord.ext import commands
 import requests
 import csv
 import os
+import youtube_dl
 
 try:
   from local_settings import *
@@ -19,6 +20,51 @@ with open("translate_lang.csv", "r", encoding="utf-8") as f:
     lang_code.append(row[1])
 
 translate_langs = "ja,en,ja"
+
+# youtube dl
+youtube_dl.utils.bug_reports_message = lambda: ''
+
+ytdl_format_options = {
+    'format': 'bestaudio/best',
+    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'restrictfilenames': True,
+    'noplaylist': True,
+    'nocheckcertificate': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+}
+
+ffmpeg_options = {
+    'options': '-vn'
+}
+
+ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+
+
+class YTDLSource(discord.PCMVolumeTransformer):
+    def __init__(self, source, *, data, volume=0.5):
+        super().__init__(source, volume)
+
+        self.data = data
+
+        self.title = data.get('title')
+        self.url = data.get('url')
+
+    @classmethod
+    async def from_url(cls, url, *, loop=None, stream=False):
+        loop = loop or asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
+
+        if 'entries' in data:
+            # take first item from a playlist
+            data = data['entries'][0]
+
+        filename = data['url'] if stream else ytdl.prepare_filename(data)
+        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 bot = commands.Bot(command_prefix='/')
 
@@ -90,6 +136,14 @@ async def on_message(message):
       await message.channel.send("ボイスチャンネルに接続していません。")
     else:
       await message.guild.voice_client.disconnect()
+  elif message.content.startswith("/play"):
+    if message.guild.voice_client is None:
+      await message.channel.send("接続していません。")
+    else:
+      url = message.content.split(" ")[1]
+      player = await YTDLSource.from_url(url, loop=bot.loop)
+      await message.guild.voice_client.play(player)
+      await message.channel.send('{} を再生します。'.format(player.title))
   else:
     return
 
