@@ -79,5 +79,18 @@ async def on_message(message):
     # print(msg + " -> " + translate_msg)
     await message.reply(reply_msg)
     # await message.channel.send(translate_msg)
+  # youtube
+  elif message.content.startswith('/join'):
+    if message.author.voice is None:
+      await message.channel.send("あなたはボイスチャンネルに接続していません。")
+    else:
+      await message.author.voice.channel.connect()
+  elif message.content.startswith("/leave"):
+    if message.guild.voice_client is None:
+      await message.channel.send("ボイスチャンネルに接続していません。")
+    else:
+      await message.guild.voice_client.disconnect()
+  else:
+    return
 
 bot.run(TOKEN)
