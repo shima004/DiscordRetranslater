@@ -17,3 +17,7 @@ $ python3 main.py
 - `/help`: Show command usage
 - `/set <language>`: Set the language to translate to
 - `/rund <number>`: Set the number of times to translate
+
+## Author
+
+shima004
